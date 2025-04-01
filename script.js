@@ -1,47 +1,46 @@
-// Обработчик загрузки изображения
-function loadImage(event) {
-    const file = event.target.files[0];
-    if (!file) return;
+// Загружаем модель TensorFlow.js
+let model;
 
-    // Преобразуем изображение в объект Image
-    const img = new Image();
-    const reader = new FileReader();
-    
-    reader.onload = function(e) {
-        img.src = e.target.result;
-        img.onload = () => {
-            const canvas = document.getElementById('canvas');
-            const ctx = canvas.getContext('2d');
-
-            // Отображаем изображение на canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        }
-    };
-    
-    reader.readAsDataURL(file);
+async function loadModel() {
+    model = await tf.loadLayersModel('https://path-to-your-model/model.json');
+    console.log("Модель загружена!");
 }
 
-// Функция предсказания
-async function predictImage() {
-    const canvas = document.getElementById('canvas');
-    const imageData = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
-    let image = tf.browser.fromPixels(imageData);
-    image = image.mean(2).expandDims(-1).toFloat().div(tf.scalar(255)); // Преобразование изображения
+loadModel(); // Загружаем модель при старте
 
-    // Преобразуем изображение, чтобы оно подходило для входа в модель
-    image = image.expandDims(0);
+// Отображение изображения на canvas
+const imageInput = document.getElementById('imageInput');
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
 
-    // Загружаем модель TensorFlow.js
-    const model = await tf.loadLayersModel('mnist_tfjs_model/model.json');
+imageInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        const img = new Image();
+        img.onload = () => {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+        };
+        img.src = URL.createObjectURL(file);
+    }
+});
+
+// Функция для предсказания цифры
+document.getElementById('predictButton').addEventListener('click', () => {
+    if (!model) {
+        alert('Модель еще не загружена');
+        return;
+    }
+
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    let imageTensor = tf.browser.fromPixels(imageData, 1);
+    imageTensor = tf.image.resizeBilinear(imageTensor, [28, 28]);
+    imageTensor = imageTensor.expandDims(0).toFloat().div(tf.scalar(255));
 
     // Предсказание
-    const prediction = model.predict(image);
-    const predictedClass = prediction.argMax(-1).dataSync()[0];
-
-    // Выводим результат
-    document.getElementById('predictionResult').textContent = `Предсказанный класс: ${predictedClass}`;
-}
-
-// Привязываем обработчик загрузки изображения к input элементу
-document.getElementById('imageInput').addEventListener('change', loadImage);
+    model.predict(imageTensor).data().then(prediction => {
+        const predictedClass = prediction.indexOf(Math.max(...prediction));
+        document.getElementById('predictionResult').innerText = `Предсказанная цифра: ${predictedClass}`;
+    });
+});
