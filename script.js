@@ -1,5 +1,5 @@
 // Обработчик загрузки изображения
-async function loadImage(event) {
+function loadImage(event) {
     const file = event.target.files[0];
     if (!file) return;
 
@@ -42,3 +42,6 @@ async function predictImage() {
     // Выводим результат
     document.getElementById('predictionResult').textContent = `Предсказанный класс: ${predictedClass}`;
 }
+
+// Привязываем обработчик загрузки изображения к input элементу
+document.getElementById('imageInput').addEventListener('change', loadImage);
