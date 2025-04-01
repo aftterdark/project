@@ -11,8 +11,14 @@
 
     <div id="prediction">
         <p>Загрузите изображение для предсказания.</p>
-        <input type="file" id="file-input" accept="image/*">
-        <canvas id="canvas" width="28" height="28"></canvas>
+
+        <!-- Форма загрузки изображения -->
+        <input type="file" id="file-input" accept="image/*" style="margin-bottom: 20px;">
+        
+        <!-- Поле для отображения загруженного изображения -->
+        <canvas id="canvas" width="28" height="28" style="border: 1px solid #000;"></canvas>
+
+        <!-- Подсказка для результата предсказания -->
         <p id="result"></p>
     </div>
 
