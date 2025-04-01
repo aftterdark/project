@@ -25,7 +25,7 @@ fileInput.addEventListener('change', (event) => {
     img.onload = () => {
         context.clearRect(0, 0, canvas.width, canvas.height);
         context.drawImage(img, 0, 0, canvas.width, canvas.height);
-        predict();
+        predict();  // Начинаем предсказание сразу после загрузки изображения
     };
     img.src = URL.createObjectURL(file);
 });
