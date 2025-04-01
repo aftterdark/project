@@ -1,18 +1,20 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Распознавание цифр</title>
+    <title>MNIST TensorFlow.js</title>
     <link rel="stylesheet" href="styles1.css">
 </head>
 <body>
-    <h1>Распознавание цифр MNIST</h1>
-    
-    <input type="file" id="imageInput">
-    <canvas id="canvas"></canvas>
-    <button id="predictButton">Предсказать</button>
-    <p id="predictionResult"></p>
+    <h1>Модель MNIST на TensorFlow.js</h1>
+
+    <div id="prediction">
+        <p>Загрузите изображение для предсказания.</p>
+        <input type="file" id="file-input" accept="image/*">
+        <canvas id="canvas" width="28" height="28"></canvas>
+        <p id="result"></p>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="script.js"></script>
