@@ -9,14 +9,9 @@
 <body>
     <h1>Распознавание цифр MNIST</h1>
     
-    <!-- Загрузка изображения -->
-    <input type="file" id="imageInput" onchange="loadImage(event)">
-    <canvas id="canvas" width="28" height="28" style="border: 1px solid #000;"></canvas>
-    
-    <!-- Кнопка для предсказания -->
-    <button id="predictButton" onclick="predictImage()">Предсказать</button>
-    
-    <!-- Место для вывода результата -->
+    <input type="file" id="imageInput">
+    <canvas id="canvas"></canvas>
+    <button id="predictButton">Предсказать</button>
     <p id="predictionResult"></p>
 
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
