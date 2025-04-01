@@ -1,29 +1,42 @@
 let model;
+const canvas = document.getElementById('canvas');
+const context = canvas.getContext('2d');
+const fileInput = document.getElementById('file-input');
+const resultElement = document.getElementById('result');
 
+// Загрузка модели
 async function loadModel() {
-    model = await tf.loadLayersModel('./mnist_tfjs_model/model.json');
-    console.log("Модель загружена!");
+    model = await tf.loadGraphModel('./mnist_tfjs_model/model.json');
+    console.log('Модель загружена');
 }
 
-async function predictImage() {
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-
-    // Получаем данные изображения
-    let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    let tensor = tf.browser.fromPixels(imageData, 1)
-        .resizeNearestNeighbor([28, 28])
-        .toFloat()
-        .div(tf.scalar(255.0))
-        .expandDims(0);
-
-    // Предсказание
-    let predictions = model.predict(tensor);
-    let predictedLabel = predictions.argMax(1).dataSync()[0];
-
-    document.getElementById("predictionResult").innerText = "Предсказанный класс: " + predictedLabel;
+// Обработка изображения с холста
+function preprocessImage() {
+    // Считываем изображение с холста и конвертируем в тензор
+    let image = tf.browser.fromPixels(canvas);
+    image = image.mean(2).toFloat().expandDims(0).expandDims(-1).div(tf.scalar(255));
+    return image;
 }
 
-document.getElementById('predictButton').addEventListener('click', predictImage);
+// Отображение изображения на холсте
+fileInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    const img = new Image();
+    img.onload = () => {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+        predict();
+    };
+    img.src = URL.createObjectURL(file);
+});
 
+// Выполнение предсказания
+async function predict() {
+    const image = preprocessImage();
+    const predictions = await model.predict(image).data();
+    const predictedClass = predictions.indexOf(Math.max(...predictions));
+    resultElement.innerText = `Предсказанный класс: ${predictedClass}`;
+}
+
+// Загружаем модель при запуске страницы
 window.onload = loadModel;
