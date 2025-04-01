@@ -2,7 +2,7 @@
 let model;
 
 async function loadModel() {
-    model = await tf.loadLayersModel('https://path-to-your-model/model.json');
+    model = await tf.loadLayersModel('https://aftterdark.github.io/project/mnist_tfjs_model/model.json');
     console.log("Модель загружена!");
 }
 
